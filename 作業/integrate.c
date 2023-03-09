@@ -14,5 +14,5 @@ double square(double x) {
 }
 
 int main() {
-    printf("integrate(square, 0.0, 2.0)=%f\n", integrate(square, 0.0, 2.0));  // 3/1x^3
+    printf("integrate(square, 0.0, 2.0)=%f\n", integrate(square, 0.0, 2.0));  // 1/3 x^3
 }
