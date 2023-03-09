@@ -1,2 +1,2 @@
-a=1
-do a=1+1 while (a<10)
+a=1;
+do a=a+1; while (a<10);

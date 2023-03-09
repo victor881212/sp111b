@@ -55,7 +55,7 @@ int F() {
 // E = F (op E)*
 int E() {
   int i1 = F();
-  while (isNext("+ - * / & | ! < > = <= >= == !=")) {
+  while (isNext("+ - * / & | ! < > =")) {
     char *op = next();
     int i2 = E();
     int i = nextTemp();
@@ -76,7 +76,21 @@ void ASSIGN() {
 //do STMT while (E)
 
 // WHILE = while (E) STMT
-void do_WHILE() {
+void WHILE() {
+  int whileBegin = nextLabel();
+  int whileEnd = nextLabel();
+  emit("(L%d)\n", whileBegin);
+  skip("while");
+  skip("(");
+  int e = E();
+  emit("if not t%d goto L%d\n", e, whileEnd);
+  skip(")");
+  STMT();
+  emit("goto L%d\n", whileBegin);
+  emit("(L%d)\n", whileEnd);
+}
+
+void DO(){
   int whileBegin = nextLabel();
   int whileEnd = nextLabel();
   emit("(L%d)\n", whileBegin);
@@ -85,35 +99,35 @@ void do_WHILE() {
   skip("while");
   skip("(");
   int e = E();
-  emit("if not T%d goto L%d\n", e, whileEnd);
+  emit("if not t%d goto L%d\n", e, whileEnd);
   skip(")");
+  skip(";");
   emit("goto L%d\n", whileBegin);
   emit("(L%d)\n", whileEnd);
-}
-
-// if (EXP) STMT (else STMT)?
-void IF() {
-  skip("if");
+ /* skip("while");
   skip("(");
-  E();
+  int e = E();
+  emit("if not t%d goto L%d\n", e, whileEnd);
   skip(")");
   STMT();
-  if (isNext("else")) {
-    skip("else");
-    STMT();
-  }
+  emit("goto L%d\n", whileBegin);
+  emit("(L%d)\n", whileEnd);*/
+//先做裡面的東西
+//判斷是否成立，如果成立就繼續做
 }
 
 // STMT = WHILE | BLOCK | ASSIGN
 void STMT() {
   if (isNext("do"))
-    return do_WHILE();
-  else if (isNext("if"))
-    IF();
-  else if (isNext("{"))
+    DO();
+  else if (isNext("while")) //如果token是while就執行
+    WHILE();
+  // else if (isNext("if"))
+  //   IF();
+  else if (isNext("{"))//如果token是{就執行
     BLOCK();
   else
-    ASSIGN();
+    ASSIGN();//如果都不是就代表是數字
 }
 
 // STMTS = STMT*
